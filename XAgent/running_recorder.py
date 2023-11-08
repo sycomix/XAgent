@@ -167,7 +167,7 @@ class RunningRecoder():
         return None
 
     def regist_query(self, query):
-        with open(os.path.join(self.record_root_dir, f"query.json"), "w",encoding="utf-8",) as writer:
+        with open(os.path.join(self.record_root_dir, "query.json"), "w", encoding="utf-8") as writer:
             json.dump(query.to_json(), writer, indent=2, ensure_ascii=False)
 
 
@@ -179,7 +179,7 @@ class RunningRecoder():
         return self.query
 
     def regist_config(self, config: XAgentConfig):
-        with open(os.path.join(self.record_root_dir, f"config.yml"), "w",encoding="utf-8") as writer:
+        with open(os.path.join(self.record_root_dir, "config.yml"), "w", encoding="utf-8") as writer:
             writer.write(yaml.safe_dump(dict(config.to_dict(safe=True)), allow_unicode=True))
 
     def get_config(self):
@@ -190,7 +190,7 @@ class RunningRecoder():
         return self.config
 
     def regist_father_info(self, record_dir):
-        with open(os.path.join(self.record_root_dir, f"This-Is-A-Reload-Run.yml"), "w",encoding="utf-8") as writer:
+        with open(os.path.join(self.record_root_dir, "This-Is-A-Reload-Run.yml"), "w", encoding="utf-8") as writer:
             writer.write(yaml.safe_dump({
                 "load_record_dir": record_dir,
             }, allow_unicode=True))

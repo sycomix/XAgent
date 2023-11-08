@@ -34,13 +34,13 @@ class ToolLabels:
     
     def dict(self,name_overwrite:str='') -> dict:
         return {
-            "name": self.name if name_overwrite=='' else name_overwrite,
+            "name": self.name if not name_overwrite else name_overwrite,
             "description": self.description[:1024],
             "parameters": {
                 "type": "object",
                 "properties": self.signature,
-                "required":self.required
-            }
+                "required": self.required,
+            },
         }
 
     def __str__(self) -> str:
@@ -76,17 +76,16 @@ class EnvLabels:
              max_show_tools:int=CONFIG['toolregister']['env_max_tools_display']) -> dict:
         if include_invisible:
             tools_name = list(self.subtools_labels.keys())
+        elif CONFIG['toolregister']['parent_tools_visible']:
+            tools_name = [tool_name for tool_name in self.subtools_labels.keys() if self.subtools_labels[tool_name].visible]
         else:
-            if CONFIG['toolregister']['parent_tools_visible']:
-                tools_name = [tool_name for tool_name in self.subtools_labels.keys() if self.subtools_labels[tool_name].visible]
-            else:
-                tools_name = self.defined_tools
-        
+            tools_name = self.defined_tools
+
         if max_show_tools != -1 and len(tools_name) > max_show_tools:
             # only show first max_show_tools tools
             tools_name = tools_name[:max_show_tools]
             tools_name.append('...')
-        
+
         return {
             "name": self.name,
             "description": self.description,

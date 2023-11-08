@@ -13,10 +13,7 @@ class Node(metaclass=abc.ABCMeta):
                  node_id: str = None):
         if plan is None:
             plan = []
-        if node_id is None:
-            self.node_id = uuid.uuid4().hex
-        else:
-            self.node_id = node_id
+        self.node_id = uuid.uuid4().hex if node_id is None else node_id
         self.thoughts = thoughts
         self.reasoning = reasoning
         self.plan = plan

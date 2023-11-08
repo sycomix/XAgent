@@ -6,7 +6,7 @@ from XAgent.utils import SearchMethodStatusCode
 class BaseSearchMethod:
     def __init__(self):
         logger.typewriter_log(
-            f"Constructing a searching method:",
+            "Constructing a searching method:",
             Fore.YELLOW,
             self.__class__.__name__,
         )

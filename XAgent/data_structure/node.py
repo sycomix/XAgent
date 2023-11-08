@@ -57,17 +57,12 @@ class ToolNode(Node):
         return data
 
     def get_depth(self):
-        if self.father == None:
-            return 0
-        return self.father.get_depth() + 1
+        return 0 if self.father is None else self.father.get_depth() + 1
     
     def get_subtree_size(self):
         if self.children == []:
             return 1
-        now_size = 1
-        for child in self.children:
-            now_size += child.get_subtree_size()
-        return now_size
+        return 1 + sum(child.get_subtree_size() for child in self.children)
 
 
 

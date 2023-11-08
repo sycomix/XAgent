@@ -20,12 +20,11 @@ class XAgentConfig(dict):
         else:
             raise AttributeError(f"'DotDict' object has no attribute '{key}'")
     def to_dict(self, safe=False):
-        if safe:
-            right_value = deepcopy(self)
-            right_value.pop("api_keys","")
-            return right_value
-        else:
+        if not safe:
             return self
+        right_value = deepcopy(self)
+        right_value.pop("api_keys","")
+        return right_value
     
     def reload(self,config_file='assets/config.yml'):
         config_file = os.getenv('CONFIG_FILE', config_file)

@@ -5,6 +5,8 @@ from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv('.env'))
 
 
+
+
 class XAgentServerEnv:
     """
     XAgentServer environment variables
@@ -29,7 +31,9 @@ class XAgentServerEnv:
     debug = True
     reload = True
     workers = 1
-    
+
+
+
     class DB:
         use_db = False
         # Optional["file", "sqlite", "mysql", "postgresql"]
@@ -41,16 +45,16 @@ class XAgentServerEnv:
                 "interactions": "XAgentServer/localstorage/records/interaction.json",
                 "parameter": "XAgentServer/localstorage/records/parameter.json",
             }
-        else:
-            if db_type == "sqlite":
-                # if you want to use sqlite to store data, you can set db_url to "sqlite://{}", in which {} is the absolute path of the sqlite file
-                db_url = "sqlite://"
-            if db_type == "mysql":
-                # if you want to use mysql to store data, you can set db_url to "mysql+pymysql://{}:{}@{}:{}/{}, in which {} is {db_user, db_password, db_host, db_port, db_name}
-                db_url = "mysql+pymysql://"
-            if db_type == "postgresql":
-                # if you want to use postgresql to store data, you can set db_url to "postgresql://{}:{}@{}:{}/{}"
-                db_url = ""
+        elif db_type == "mysql":
+            # if you want to use mysql to store data, you can set db_url to "mysql+pymysql://{}:{}@{}:{}/{}, in which {} is {db_user, db_password, db_host, db_port, db_name}
+            db_url = "mysql+pymysql://"
+        elif db_type == "postgresql":
+            # if you want to use postgresql to store data, you can set db_url to "postgresql://{}:{}@{}:{}/{}"
+            db_url = ""
+        elif db_type == "sqlite":
+            # if you want to use sqlite to store data, you can set db_url to "sqlite://{}", in which {} is the absolute path of the sqlite file
+            db_url = "sqlite://"
+
     class Redis:
         use_redis = False
         redis_url = "redis://localhost"
@@ -59,7 +63,6 @@ class XAgentServerEnv:
         redis_db = 0
         redis_password = None
 
-    # if you want to use email to send message, you can set send_email to True and set email_host, email_port, email_user, email_password, auth_server
     class Email:
         send_email = False
         email_host = ""
@@ -68,13 +71,13 @@ class XAgentServerEnv:
         email_password = ""
         auth_server = ""
 
-    # if you want to use upload function, you can set upload_dir to the path of the upload directory and set upload_allowed_types to the allowed types
     class Upload:
         upload_dir = "XAgentServer/localstorage/upload"
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
         upload_allowed_types = ["image/png", "image/jpeg", "image/gif", "text/plain",
                                 "application/msword", "pdf", "txt", "pptx", "xlsx", "doc", "ppt", "xls"]
+
 
 
 if os.path.exists("XAgentServer/prod_server_envs.py") and XAgentServerEnv.prod:
