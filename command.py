@@ -26,13 +26,17 @@ class CommandLine():
                                     "interact_records"), self.date_str, self.client_id)
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
-        
-        self.logger = Logger(log_dir=self.log_dir, log_file=f"interact.log")
+
+        self.logger = Logger(log_dir=self.log_dir, log_file="interact.log")
 
         self.logger.typewriter_log(
-            title=f"XAgentServer is running on cmd mode",
-            title_color=Fore.RED)
-        self.logger.info(title=f"XAgentServer log:", title_color=Fore.RED, message=f"{self.log_dir}")
+            title="XAgentServer is running on cmd mode", title_color=Fore.RED
+        )
+        self.logger.info(
+            title="XAgentServer log:",
+            title_color=Fore.RED,
+            message=f"{self.log_dir}",
+        )
 
         if env.DB.db_type in ["sqlite", "mysql", "postgresql"]:
             from XAgentServer.database.connect import DBConnection
@@ -47,7 +51,7 @@ class CommandLine():
 
         else:
             from XAgentServer.database.lsi import \
-                InteractionLocalStorageInterface
+                    InteractionLocalStorageInterface
             self.logger.info(
                 "init localstorage connection: interaction.json")
             self.interactionDB = InteractionLocalStorageInterface(env)

@@ -8,18 +8,16 @@ class XAgentIO:
     def __init__(self, input: BaseInput, output: BaseOutput) -> None:
         if input is None:
             self.Input = CommandLineInput()
-        else:
-            if not isinstance(input, BaseInput):
-                raise TypeError("input must be a BaseInput instance")
-            
+        elif not isinstance(input, BaseInput):
+            raise TypeError("input must be a BaseInput instance")
+
         self.Input = input
 
         if output is None:
             self.Output = CommandLineOutput()
-        else:
-            if not isinstance(output, BaseOutput):
-                raise TypeError("output must be a BaseOutput instance")
-            
+        elif not isinstance(output, BaseOutput):
+            raise TypeError("output must be a BaseOutput instance")
+
         self.Output = output
 
 

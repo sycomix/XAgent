@@ -12,11 +12,9 @@ from XAgent.message_history import Message
 
 class AgentDispatcher(metaclass=abc.ABCMeta):
     def __init__(self):
-        self.agent_markets = {}
-        for requirement in RequiredAbilities:
-            self.agent_markets[requirement] = []
+        self.agent_markets = {requirement: [] for requirement in RequiredAbilities}
         logger.typewriter_log(
-            f"Constructing an AgentDispatcher:",
+            "Constructing an AgentDispatcher:",
             Fore.YELLOW,
             self.__class__.__name__,
         )
@@ -105,14 +103,19 @@ class XAgentDispatcher(AgentDispatcher):
                     Message(role="user", content=example_user_prompt),
                 ]
             else:
-                logger.typewriter_log(self.__class__.__name__, Fore.GREEN, f"The prompt has been refined!")
+                logger.typewriter_log(
+                    self.__class__.__name__,
+                    Fore.GREEN,
+                    "The prompt has been refined!",
+                )
         else:
             prompt_messages = [
                 Message(role="system", content=example_system_prompt),
                 Message(role="user", content=example_user_prompt),
             ]
-        agent = self.build_agent(ability_type, self.config, prompt_messages, *args, **kwargs)
-        return agent
+        return self.build_agent(
+            ability_type, self.config, prompt_messages, *args, **kwargs
+        )
 
 
 

@@ -49,9 +49,9 @@ class XAgentServer:
                 plan=args.get('plan', [
                 ]),
             )
-       
+
             self.logger.info(f"server is running, the start query is {args.get('goal', '')}")
-        
+
         recorder.regist_query(query)
         recorder.regist_config(config)
 
@@ -101,7 +101,7 @@ class XAgentServer:
             tool_functions_description_list=tool_functions_description_list,
         )
         try:
-            self.logger.info(f"Start outer loop async")
+            self.logger.info("Start outer loop async")
             await task_handler.outer_loop_async()
         except Exception as e:
             self.logger.info(traceback.format_exc())

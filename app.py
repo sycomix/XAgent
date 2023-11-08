@@ -111,13 +111,12 @@ async def startup_event():
         title_color=Fore.RED)
     if XAgentServerEnv.default_login:
         logger.typewriter_log(
-            title=f"Default user: admin, token: xagent-admin, you can use it to login",
-            title_color=Fore.RED)
+            title="Default user: admin, token: xagent-admin, you can use it to login",
+            title_color=Fore.RED,
+        )
 
     manager = WebSocketConnectionManager()
-    logger.typewriter_log(
-        title=f"init a websocket manager",
-        title_color=Fore.RED)
+    logger.typewriter_log(title="init a websocket manager", title_color=Fore.RED)
 
     logger.typewriter_log(
         title=f"init a thread pool executor, max_workers: {XAgentServerEnv.workers}",
@@ -184,9 +183,7 @@ def check_user_auth(user_id: str = Form(...),
     """
     if userInterface.user_is_exist(user_id=user_id) == False:
         return False
-    if not userInterface.user_is_valid(user_id=user_id, token=token):
-        return False
-    return True
+    return bool(userInterface.user_is_valid(user_id=user_id, token=token))
 
 
 @app.post("/register")
@@ -241,7 +238,7 @@ async def auth(user_id: str = Query(...),
     if (XAgentServerEnv.default_login and user_id == "admin" and token == "xagent-admin"):
         return ResponseBody(data=user.to_dict(), success=True, message="auth success")
 
-    if user == None:
+    if user is None:
         return ResponseBody(success=False, message="user is not exist")
 
     if user.token != token:
@@ -250,14 +247,12 @@ async def auth(user_id: str = Query(...),
         user.update_time, "%Y-%m-%d %H:%M:%S")
     if expired_time.seconds > 60 * 60 * 24 * 7:
         return ResponseBody(success=False, message="token is expired")
-    if user.available == False:
-
-        user.available = True
-        user.update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        userInterface.update_user(user)
-    else:
+    if user.available != False:
         return ResponseBody(success=False, message="user is already available!")
 
+    user.available = True
+    user.update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    userInterface.update_user(user)
     return ResponseBody(data=user.to_dict(), success=True, message="auth success")
 
 
@@ -272,7 +267,7 @@ async def login(email: str = Form(...),
     user = userInterface.get_user(email=email)
     if (XAgentServerEnv.default_login and email == "admin" and token == "xagent-admin"):
         return ResponseBody(data=user.to_dict(), success=True, message="auth success")
-    if user == None:
+    if user is None:
         return ResponseBody(success=False, message="user is not exist")
 
     if user.token != token:
@@ -306,7 +301,7 @@ async def create_upload_files(files: List[UploadFile] = File(...),
                               token: str = Form(...),
                               db: Session = Depends(get_db)) -> ResponseBody:
     userInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -315,7 +310,7 @@ async def create_upload_files(files: List[UploadFile] = File(...),
     if not userInterface.user_is_valid(user_id=user_id, token=token):
         return ResponseBody(success=False, message="user is not available!")
 
-    if len(files) == 0:
+    if not files:
         return ResponseBody(success=False, message="files is empty!")
     if len(files) > 5:
         files = files[:5]
@@ -352,7 +347,7 @@ async def get_all_interactions(user_id: str = Form(...),
     """
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -374,7 +369,7 @@ async def get_all_interactions(user_id: str = Form(...),
                                db: Session = Depends(get_db)) -> ResponseBody:
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
     if userInterface.user_is_exist(user_id=user_id) == False:
         return ResponseBody(success=False, message="user is not exist!")
@@ -392,7 +387,7 @@ async def share_interaction(user_id: str = Form(...),
 
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -402,7 +397,7 @@ async def share_interaction(user_id: str = Form(...),
 
     interaction = interactionInterface.get_interaction(
         interaction_id=interaction_id)
-    if interaction == None:
+    if interaction is None:
         return ResponseBody(success=False, message=f"Don't find any interaction by interaction_id: {interaction_id}, Please check your interaction_id!")
 
     flag = ShareUtil.share_interaction(
@@ -420,7 +415,7 @@ async def get_all_interactions(user_id: str = Form(...),
     """
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -448,7 +443,7 @@ async def update_interaction_parameter(user_id: str = Form(...),
     
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -456,11 +451,11 @@ async def update_interaction_parameter(user_id: str = Form(...),
 
     if not userInterface.user_is_valid(user_id=user_id, token=token):
         return ResponseBody(success=False, message="user is not available!")
-    if interaction_id == "":
-        return ResponseBody(success=False, message=f"interaction_id is empty!")
+    if not interaction_id:
+        return ResponseBody(success=False, message="interaction_id is empty!")
     interaction = interactionInterface.get_interaction(
         interaction_id=interaction_id)
-    if interaction == None:
+    if interaction is None:
         return ResponseBody(success=False, message=f"Don't find any interaction by interaction_id: {interaction_id}, Please check your interaction_id!")
     update_data = {
         "interaction_id": interaction_id,
@@ -481,7 +476,7 @@ async def update_interaction_description(user_id: str = Form(...),
                                          ) -> ResponseBody:
     userInterface.register_db(db)
     interactionInterface.register_db(db)
-    if user_id == "":
+    if not user_id:
         return ResponseBody(success=False, message="user_id is empty!")
 
     if userInterface.user_is_exist(user_id=user_id) == False:
@@ -489,11 +484,11 @@ async def update_interaction_description(user_id: str = Form(...),
 
     if not userInterface.user_is_valid(user_id=user_id, token=token):
         return ResponseBody(success=False, message="user is not available!")
-    if interaction_id == "":
-        return ResponseBody(success=False, message=f"interaction_id is empty!")
+    if not interaction_id:
+        return ResponseBody(success=False, message="interaction_id is empty!")
     interaction = interactionInterface.get_interaction(
         interaction_id=interaction_id)
-    if interaction == None:
+    if interaction is None:
         return ResponseBody(success=False, message=f"Don't find any interaction by interaction_id: {interaction_id}, Please check your interaction_id!")
     update_data = {
         "interaction_id": interaction_id,
@@ -545,7 +540,10 @@ class MainServer(WebSocketEndpoint):
             os.makedirs(self.log_dir)
 
         self.logger = Logger(
-            log_dir=self.log_dir, log_file=f"interact.log", log_name=f"{self.client_id}_INTERACT")
+            log_dir=self.log_dir,
+            log_file="interact.log",
+            log_name=f"{self.client_id}_INTERACT",
+        )
         query_string = self.scope.get("query_string", b"").decode()
         parameters = parse_qs(query_string)
         user_id = parameters.get("user_id", [""])[0]
@@ -561,15 +559,14 @@ class MainServer(WebSocketEndpoint):
         # await websocket_queue.put(websocket)
         self.websocket = websocket
         self.register_db()
-        
+
         if self.userInterface.user_is_exist(user_id=user_id) == False:
             raise XAgentIOWebSocketConnectError("user is not exist!")
         # auth
         if not self.userInterface.user_is_valid(user_id=user_id, token=token):
             raise XAgentIOWebSocketConnectError("user is not available!")
-        # check running, you can edit it by yourself in envs.py to skip this check
-        if XAgentServerEnv.check_running:
-            if self.interactionInterface.is_running(user_id=user_id):
+        if self.interactionInterface.is_running(user_id=user_id):
+            if XAgentServerEnv.check_running:
                 raise XAgentIOWebSocketConnectError(
                     "You have a running interaction, please wait for it to finish!")
 
@@ -869,7 +866,7 @@ class ReplayServer(WebSocketEndpoint):
         self.interaction_id = self.scope.get(
             "path_params", {}).get("client_id", None)
         query_string = self.scope.get("query_string", b"").decode()
-        
+
         logger.typewriter_log(
             title=f"Receive connection from {self.client_id}: ",
             title_color=Fore.RED)
@@ -881,7 +878,7 @@ class ReplayServer(WebSocketEndpoint):
         interaction = self.interactionInterface.get_interaction(
             interaction_id=self.interaction_id)
 
-        if interaction == None:
+        if interaction is None:
             await self.websocket.send_text(WebsocketResponseBody(success=False, message="interaction is not exist!", data=None).to_text())
             raise Exception("interaction is not exist!")
         await websocket.send_text(WebsocketResponseBody(status="connect", success=True, message="connect success", data=interaction.to_dict()).to_text())
@@ -965,7 +962,7 @@ class SharedServer(WebSocketEndpoint):
         interaction = self.interactionInterface.get_shared_interaction(
             interaction_id=self.interaction_id)
 
-        if interaction == None:
+        if interaction is None:
             await self.websocket.send_text(WebsocketResponseBody(success=False, message="interaction is not exist!", data=None).to_text())
             raise Exception("interaction is not exist!")
         await websocket.send_text(WebsocketResponseBody(status="connect", success=True, message="connect success", data=interaction.to_dict()).to_text())

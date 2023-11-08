@@ -10,9 +10,9 @@ class User(BaseModel):
     def email_is_valid(cls, v):
         if v == "":
             raise ValueError("email is empty")
-        if re.match(r"[^@]+@[^@]+\.[^@]+", v) == None:
+        if re.match(r"[^@]+@[^@]+\.[^@]+", v) is None:
             raise ValueError("email is invalid")
-        
+
         return v
     
 
